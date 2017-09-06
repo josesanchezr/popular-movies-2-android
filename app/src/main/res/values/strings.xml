@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">PopularMovies</string>
+
+    <string name="vote_average">Vote average</string>
+    <string name="synopsis">Synopsis</string>
+    <string name="poster_movie">Poster movie</string>
+    <string name="title_movie">This is a movie title</string>
+    <string name="release_date">Release date: </string>
+    <string name="date_movie">2016&#8211;05&#8211;01</string>
+
+    <!-- Options of menu -->
+    <string name="menu_movie_popular">Most popular</string>
+    <string name="menu_movie_top_rated">Highest rated</string>
+</resources>

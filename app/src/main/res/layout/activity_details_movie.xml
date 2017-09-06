@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/details_movie"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:scrollbars="none"
+    tools:context="com.example.android.popularmovies.ui.DetailsMovie">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/image_poster"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:contentDescription="@string/poster_movie"
+                android:scaleType="centerCrop" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/original_title"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/title_movie" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/colorPrimaryDark" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_vote_average"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vote_average" />
+
+            <RatingBar
+                android:id="@+id/rating_bar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:numStars="10"
+                android:stepSize="0.1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/text_release_date"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/release_date" />
+
+            <TextView
+                android:id="@+id/release_date"
+                style="@style/TextAppearance.AppCompat.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/date_movie" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/text_synopsis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/synopsis" />
+
+        <TextView
+            android:id="@+id/overview"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textStyle="italic"
+            tools:text="Minions Stuart, Kevin and Bob are recruited by Scarlet Overkill, a super-villain who, alongside her inventor husband Herb, hatches a plot to take over the world." />
+
+
+    </LinearLayout>
+
+</ScrollView>
