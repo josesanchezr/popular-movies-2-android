@@ -24,7 +24,8 @@ public class ControllerMovies implements Callback {
 
     private static final String MOVIE_DB_API_URL = "https://api.themoviedb.org/3/";
 
-    private static final String API_KEY = "3bcc03b5189ef68b0616d6a43c2326d9";
+    // Setting a API KEY here.
+    private static final String API_KEY = "API KEY";
 
     public final MovieDetailApi movieDetailApi;
 
