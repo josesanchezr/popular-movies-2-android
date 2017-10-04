@@ -1,6 +1,7 @@
 package com.example.android.popularmovies.ui;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,12 +15,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.example.android.popularmovies.data.MoviesContract;
 import com.example.android.popularmovies.ui.DetailsMovie;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.adapter.MovieDetailAdapter;
 import com.example.android.popularmovies.api.ControllerMovies;
 import com.example.android.popularmovies.data.MovieDetail;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -108,9 +111,51 @@ public class MainActivityFragment extends Fragment {
             case R.id.movie_top_rated:
                 controllerMovies.movieDetailApi.discoverMoviesTopRated().enqueue(moviesCallback);
                 return false;
+            case R.id.movie_favorite:
+                Cursor cursor = getActivity().getContentResolver().query(MoviesContract.MoviesEntry.CONTENT_URI,
+                        null,
+                        null,
+                        null,
+                        null);
+                loadFavoriteMovies(cursor);
+                return false;
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void loadFavoriteMovies(Cursor cursor) {
+        if (cursor != null && cursor.getCount() > 0) {
+            int indexId = cursor.getColumnIndex(MoviesContract.MoviesEntry._ID);
+            int indexOriginalTitle = cursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_ORIGINAL_TITLE);
+            int indexPosterPath = cursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_POSTER_PATH);
+            int indexOverview = cursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_OVERVIEW);
+            int indexVoteAverage = cursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE);
+            int indexReleaseDate = cursor.getColumnIndex(MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE);
+
+            List<MovieDetail> movies = new ArrayList<>();
+
+            while (cursor.moveToNext()) {
+
+                String id = cursor.getString(indexId);
+                String originalTitle = cursor.getString(indexOriginalTitle);
+                String imageThumbnail = cursor.getString(indexPosterPath);
+                String synopsis = cursor.getString(indexOverview);
+                Double userRating = cursor.getDouble(indexVoteAverage);
+                String releaseDate = cursor.getString(indexReleaseDate);
+
+                MovieDetail movieDetail = new MovieDetail(id,
+                        originalTitle,
+                        imageThumbnail,
+                        synopsis,
+                        userRating,
+                        releaseDate);
+
+                movies.add(movieDetail);
+            }
+            MovieDetailAdapter moviesAdapter = new MovieDetailAdapter(getActivity(), movies);
+            gridView.setAdapter(moviesAdapter);
+        }
     }
 }
