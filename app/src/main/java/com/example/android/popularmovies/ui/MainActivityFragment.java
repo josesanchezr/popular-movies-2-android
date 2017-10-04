@@ -3,6 +3,7 @@ package com.example.android.popularmovies.ui;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -35,6 +36,9 @@ public class MainActivityFragment extends Fragment {
 
     private ControllerMovies controllerMovies;
 
+    private List<MovieDetail> movies;
+    private static final String MOVIES_DETAILS = "MOVIES_DETAILS";
+
     public MainActivityFragment() {
 
     }
@@ -46,12 +50,38 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        ArrayList<Parcelable> parcelablesMovies = new ArrayList<>();
+        for (MovieDetail movieDetail : movies) {
+            Parcelable parcelable = movieDetail;
+            parcelablesMovies.add(parcelable);
+        }
+        outState.putParcelableArrayList(MOVIES_DETAILS, parcelablesMovies);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            movies = savedInstanceState.getParcelableArrayList(MOVIES_DETAILS);
+            MovieDetailAdapter moviesAdapter = new MovieDetailAdapter(getActivity(), movies);
+            gridView.setAdapter(moviesAdapter);
+            moviesAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         gridView = rootView.findViewById(R.id.movies_grid);
 
         controllerMovies = new ControllerMovies();
-        controllerMovies.movieDetailApi.discoverMoviesPopular().enqueue(moviesCallback);
+
+        if (savedInstanceState == null) {
+            controllerMovies.movieDetailApi.discoverMoviesPopular().enqueue(moviesCallback);
+        }
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -73,7 +103,7 @@ public class MainActivityFragment extends Fragment {
         public void onResponse(Call<MovieDetail.Response> call, Response<MovieDetail.Response> response) {
             if (response.isSuccessful()) {
                 if (response.body() != null) {
-                    List<MovieDetail> movies = response.body().movies;
+                    movies = response.body().movies;
                     Log.d("MOVIE", "Cantidad de peliculas " + String.valueOf(movies.size()));
                     for (MovieDetail movie : movies) {
                         Log.d("MOVIE", "Titulo: " + movie.originalTitle);

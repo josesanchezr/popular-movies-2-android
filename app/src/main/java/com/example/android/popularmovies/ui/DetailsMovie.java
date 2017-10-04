@@ -4,6 +4,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -28,6 +29,7 @@ import com.example.android.popularmovies.data.MovieTrailer;
 import com.example.android.popularmovies.data.MoviesContract;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -68,16 +70,95 @@ public class DetailsMovie extends AppCompatActivity {
 
     private boolean isFavoriteMovie;
 
+    private List<MovieTrailer> trailers;
+
+    private List<MovieReview> reviews;
+
+    private static final String MOVIE_DETAIL = "MOVIE_DETAIL";
+    private static final String MOVIE_TRAILERS = "MOVIE_TRAILERS";
+    private static final String MOVIE_REVIEWS = "MOVIE_REVIEWS";
+    private static final String MOVIE_FAVORITE = "MOVIE_FAVORITE";
+    private static final String MOVIE_FAVORITE_TEXT = "MOVIE_FAVORITE_TEXT";
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        outState.putParcelable(MOVIE_DETAIL, movieDetail);
+
+        ArrayList<Parcelable> parcelablesTrailers = new ArrayList<>();
+
+        for (MovieTrailer movieTrailer : trailers) {
+            Parcelable parcelable = movieTrailer;
+            parcelablesTrailers.add(parcelable);
+        }
+        outState.putParcelableArrayList(MOVIE_TRAILERS, parcelablesTrailers);
+
+        ArrayList<Parcelable> parcelablesReviews = new ArrayList<>();
+
+        for (MovieReview movieReview : reviews) {
+            Parcelable parcelable = movieReview;
+            parcelablesReviews.add(parcelable);
+        }
+        outState.putParcelableArrayList(MOVIE_REVIEWS, parcelablesReviews);
+
+        outState.putBoolean(MOVIE_FAVORITE, isFavoriteMovie);
+        outState.putString(MOVIE_FAVORITE_TEXT, favoriteButton.getText().toString());
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        movieDetail = (MovieDetail) savedInstanceState.get(MOVIE_DETAIL);
+        trailers = savedInstanceState.getParcelableArrayList(MOVIE_TRAILERS);
+        reviews = savedInstanceState.getParcelableArrayList(MOVIE_REVIEWS);
+        isFavoriteMovie = savedInstanceState.getBoolean(MOVIE_FAVORITE);
+
+        MovieTrailersAdapter adapterTrailers = new MovieTrailersAdapter(trailers);
+        trailersRecyclerView.setAdapter(adapterTrailers);
+        adapterTrailers.notifyDataSetChanged();
+
+        MovieReviewsAdapter adapterReviews = new MovieReviewsAdapter(reviews);
+        reviewsRecyclerView.setAdapter(adapterReviews);
+        adapterReviews.notifyDataSetChanged();
+
+        String favoriteTextButton = savedInstanceState.getString(MOVIE_FAVORITE_TEXT);
+        favoriteButton.setText(favoriteTextButton);
+
+        createOrRestartUI();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details_movie);
         ButterKnife.bind(this);
 
-        controllerMovies = new ControllerMovies();
+        if (savedInstanceState == null) {
+            controllerMovies = new ControllerMovies();
 
-        movieDetail = getIntent().getParcelableExtra("DETAILS_MOVIE");
+            movieDetail = getIntent().getParcelableExtra("DETAILS_MOVIE");
 
+            Uri uri = ContentUris.withAppendedId(MoviesContract.MoviesEntry.CONTENT_URI, Integer.valueOf(movieDetail.id));
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            if (cursor.getCount() == 0) {
+                isFavoriteMovie = false;
+                favoriteButton.setText(getResources().getString(R.string.add_favorites));
+            } else {
+                favoriteButton.setText(getResources().getString(R.string.del_favorites));
+                isFavoriteMovie = true;
+            }
+
+            controllerMovies.movieDetailApi.fetchMovieTrailers(movieDetail.id).enqueue(trailersCallback);
+            controllerMovies.movieDetailApi.fetchMovieReviews(movieDetail.id).enqueue(reviewsCallback);
+
+            createOrRestartUI();
+        }
+    }
+
+    private void createOrRestartUI() {
         originalTitle.setText(movieDetail.originalTitle);
         releaseDate.setText(movieDetail.releaseDate);
         synopsis.setText(movieDetail.synopsis);
@@ -90,16 +171,6 @@ public class DetailsMovie extends AppCompatActivity {
                 .resize(200, 200)
                 .centerCrop()
                 .into(imagePoster);
-
-        Uri uri = ContentUris.withAppendedId(MoviesContract.MoviesEntry.CONTENT_URI, Integer.valueOf(movieDetail.id));
-        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-        if (cursor.getCount() == 0) {
-            isFavoriteMovie = false;
-            favoriteButton.setText(getResources().getString(R.string.add_favorites));
-        } else {
-            favoriteButton.setText(getResources().getString(R.string.del_favorites));
-            isFavoriteMovie = true;
-        }
 
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,10 +190,6 @@ public class DetailsMovie extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManagerReviews = new LinearLayoutManager(this);
         reviewsRecyclerView.setLayoutManager(layoutManagerReviews);
         reviewsRecyclerView.setHasFixedSize(true);
-
-        controllerMovies.movieDetailApi.fetchMovieTrailers(movieDetail.id).enqueue(trailersCallback);
-
-        controllerMovies.movieDetailApi.fetchMovieReviews(movieDetail.id).enqueue(reviewsCallback);
     }
 
     private final Callback<MovieTrailer.Response> trailersCallback = new Callback<MovieTrailer.Response>() {
@@ -130,7 +197,7 @@ public class DetailsMovie extends AppCompatActivity {
         public void onResponse(Call<MovieTrailer.Response> call, Response<MovieTrailer.Response> response) {
             if (response.isSuccessful()) {
                 if (response.body() != null) {
-                    List<MovieTrailer> trailers = response.body().trailers;
+                    trailers = response.body().trailers;
                     Log.d("MOVIE-TRAILER", "Cantidad de trailers " + String.valueOf(trailers.size()));
                     for (MovieTrailer trailer : trailers) {
                         Log.d("MOVIE-TRAILER", "Name: " + trailer.name);
@@ -157,7 +224,7 @@ public class DetailsMovie extends AppCompatActivity {
         public void onResponse(Call<MovieReview.Response> call, Response<MovieReview.Response> response) {
             if (response.isSuccessful()) {
                 if (response.body() != null) {
-                    List<MovieReview> reviews = response.body().reviews;
+                    reviews = response.body().reviews;
                     Log.d("MOVIE-REVIEW", "Cantidad de reviews " + String.valueOf(reviews.size()));
                     for (MovieReview review : reviews) {
                         Log.d("MOVIE-REVIEW", "Name: " + review.author);

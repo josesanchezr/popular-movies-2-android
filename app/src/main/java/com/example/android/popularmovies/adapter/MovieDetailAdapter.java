@@ -38,7 +38,6 @@ public class MovieDetailAdapter extends ArrayAdapter<MovieDetail> {
         if (movieDetail != null) {
             ImageView iconView = convertView.findViewById(R.id.item_image);
             String imagen = "http://image.tmdb.org/t/p/w185/" + movieDetail.imageThumbnail;
-            Log.d("Movie", imagen);
             Picasso.with(getContext())
                     .load(imagen)
                     .resize(200, 200)
