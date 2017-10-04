@@ -16,6 +16,9 @@ import java.util.List;
 
 public class MovieDetail implements Parcelable {
 
+    @SerializedName("id")
+    public final String id;
+
     @SerializedName("original_title")
     public final String originalTitle;
 
@@ -31,7 +34,8 @@ public class MovieDetail implements Parcelable {
     @SerializedName("release_date")
     public final String releaseDate;
 
-    public MovieDetail(String originalTitle, String imageThumbnail, String synopsis, Double userRating, String releaseDate) {
+    public MovieDetail(String id, String originalTitle, String imageThumbnail, String synopsis, Double userRating, String releaseDate) {
+        this.id = id;
         this.originalTitle = originalTitle;
         this.imageThumbnail = imageThumbnail;
         this.synopsis = synopsis;
@@ -40,6 +44,7 @@ public class MovieDetail implements Parcelable {
     }
 
     private MovieDetail(Parcel in) {
+        id = in.readString();
         originalTitle = in.readString();
         imageThumbnail = in.readString();
         synopsis = in.readString();
@@ -58,6 +63,7 @@ public class MovieDetail implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
         parcel.writeString(originalTitle);
         parcel.writeString(imageThumbnail);
         parcel.writeString(synopsis);
