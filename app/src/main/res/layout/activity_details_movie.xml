@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -27,7 +27,20 @@
                 android:contentDescription="@string/poster_movie"
                 android:scaleType="centerCrop" />
 
-        </RelativeLayout>
+            <Button
+                android:id="@+id/favoriteButton"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="25dp"
+                android:background="@android:color/holo_red_light"
+                android:gravity="center"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:text="@string/add_favorites"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/original_title"
@@ -104,6 +117,35 @@
             android:textStyle="italic"
             tools:text="Minions Stuart, Kevin and Bob are recruited by Scarlet Overkill, a super-villain who, alongside her inventor husband Herb, hatches a plot to take over the world." />
 
+        <TextView
+            android:id="@+id/text_trailers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/trailers" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/trailers_movie"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/text_reviews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/reviews" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/reviews_movie"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+        </android.support.v7.widget.RecyclerView>
 
     </LinearLayout>
 
