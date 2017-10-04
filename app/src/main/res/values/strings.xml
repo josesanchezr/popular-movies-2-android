@@ -7,8 +7,13 @@
     <string name="title_movie">This is a movie title</string>
     <string name="release_date">Release date: </string>
     <string name="date_movie">2016&#8211;05&#8211;01</string>
+    <string name="trailers">Trailers</string>
+    <string name="reviews">Reviews</string>
+    <string name="add_favorites">Mark as Favorite</string>
+    <string name="del_favorites">Remove of Favorites</string>
 
     <!-- Options of menu -->
     <string name="menu_movie_popular">Most popular</string>
     <string name="menu_movie_top_rated">Highest rated</string>
+    <string name="menu_movie_favorite">Favorite</string>
 </resources>
